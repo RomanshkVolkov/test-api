@@ -1,0 +1,14 @@
+{
+   "material-icon-theme.activeIconPack": "angular",
+   "material-icon-theme.folders.associations": {
+      "envs": "docker",
+      "production": "api",
+      "internal": "app",
+      "repository": "database",
+      "adapters": "connection",
+      "domain": "interface"
+   },
+   "material-icon-theme.files.associations": {
+      "*.auth": "virtual"
+   }
+}

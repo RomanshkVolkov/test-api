@@ -1,0 +1,325 @@
+basePath: /
+definitions:
+  domain.APIResponse:
+    properties:
+      error: {}
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  domain.ChangePassword:
+    properties:
+      confirmPassword:
+        maxLength: 200
+        minLength: 6
+        type: string
+      currentPassword:
+        maxLength: 200
+        minLength: 6
+        type: string
+      password:
+        maxLength: 200
+        minLength: 6
+        type: string
+    required:
+    - confirmPassword
+    - currentPassword
+    - password
+    type: object
+  domain.ForgottenPasswordCode:
+    properties:
+      otp:
+        maxLength: 5
+        minLength: 5
+        type: string
+      username:
+        maxLength: 200
+        minLength: 6
+        type: string
+    required:
+    - otp
+    - username
+    type: object
+  domain.NewUser:
+    properties:
+      email:
+        maxLength: 300
+        type: string
+      name:
+        maxLength: 300
+        minLength: 3
+        type: string
+      password:
+        minLength: 6
+        type: string
+      role:
+        $ref: '#/definitions/domain.Role'
+      username:
+        maxLength: 200
+        minLength: 6
+        type: string
+    required:
+    - email
+    - name
+    - password
+    - role
+    - username
+    type: object
+  domain.PasswordResetRequest:
+    properties:
+      username:
+        type: string
+    type: object
+  domain.ResetForgottenPassword:
+    properties:
+      confirmPassword:
+        maxLength: 200
+        minLength: 6
+        type: string
+      otp:
+        maxLength: 5
+        minLength: 5
+        type: string
+      password:
+        maxLength: 200
+        minLength: 6
+        type: string
+      username:
+        maxLength: 200
+        minLength: 6
+        type: string
+    required:
+    - confirmPassword
+    - otp
+    - password
+    - username
+    type: object
+  domain.Role:
+    enum:
+    - root
+    - admin
+    - customer
+    - employer
+    type: string
+    x-enum-varnames:
+    - Root
+    - Admin
+    - Customer
+    - Employer
+  domain.SignInRequest:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+host: 192.168.1.149:8080
+info:
+  contact:
+    email: joseguzmandev@gmail.com
+    name: Jose Guzman
+  description: Created by @RomanshkVolkov.
+  termsOfService: http://swagger.io/terms/
+  title: GO API
+  version: "3.0"
+paths:
+  /auth/change-password:
+    post:
+      description: This endpoint will change the password of authenticated the user
+      parameters:
+      - description: New password
+        in: body
+        name: NewPassword
+        required: true
+        schema:
+          $ref: '#/definitions/domain.ChangePassword'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Operation information
+          schema:
+            $ref: '#/definitions/domain.APIResponse'
+        "400":
+          description: Unhandled error (report it)
+          schema:
+            type: string
+        "500":
+          description: Server error (report it)
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Change password
+      tags:
+      - Authentication
+  /auth/forgot-password:
+    post:
+      description: This endpoint will send an email with the OTP code
+      parameters:
+      - description: Requires the username to identify the user
+        in: body
+        name: UserIdentity
+        required: true
+        schema:
+          $ref: '#/definitions/domain.PasswordResetRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Return just a message
+          schema:
+            $ref: '#/definitions/domain.APIResponse'
+        "401":
+          description: Unhandled error (report it)
+          schema:
+            type: string
+        "500":
+          description: Server error (report it)
+          schema:
+            type: string
+      summary: Send an email with the OTP code
+      tags:
+      - Authentication
+  /auth/forgot-password/reset:
+    post:
+      description: This endpoint will reset the password of the user with the OTP
+        code
+      parameters:
+      - description: New credentials by OTP
+        in: body
+        name: NewCredentials
+        required: true
+        schema:
+          $ref: '#/definitions/domain.ResetForgottenPassword'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Operation information
+          schema:
+            $ref: '#/definitions/domain.APIResponse'
+        "400":
+          description: Unhandled error (report it)
+          schema:
+            type: string
+        "500":
+          description: Server error (report it)
+          schema:
+            type: string
+      summary: Change password with the OTP code
+      tags:
+      - Authentication
+  /auth/forgot-password/verify:
+    post:
+      description: Returns data about the code
+      parameters:
+      - description: Require the username and the OTP code
+        in: body
+        name: UserIdentity
+        required: true
+        schema:
+          $ref: '#/definitions/domain.ForgottenPasswordCode'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Information about the code
+          schema:
+            $ref: '#/definitions/domain.APIResponse'
+        "400":
+          description: Unhandled error (report it)
+          schema:
+            type: string
+        "500":
+          description: Server error (report it)
+          schema:
+            type: string
+      summary: Verify the code is valid
+      tags:
+      - Authentication
+  /auth/sign-in:
+    post:
+      description: Sign in to the application
+      parameters:
+      - description: User credentials
+        in: body
+        name: UserCredentials
+        required: true
+        schema:
+          $ref: '#/definitions/domain.SignInRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful sign in
+          schema:
+            $ref: '#/definitions/domain.APIResponse'
+        "400":
+          description: Unhandled error (report it)
+          schema:
+            type: string
+        "500":
+          description: Server error (report it)
+          schema:
+            type: string
+      summary: Just Sign In
+      tags:
+      - Authentication
+  /auth/sign-up:
+    post:
+      parameters:
+      - description: Just the user data
+        in: body
+        name: UserData
+        required: true
+        schema:
+          $ref: '#/definitions/domain.NewUser'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Return message
+          schema:
+            $ref: '#/definitions/domain.APIResponse'
+        "400":
+          description: Unhandled error (report it)
+          schema:
+            type: string
+        "500":
+          description: Server error (report it)
+          schema:
+            type: string
+      summary: Just Sign Up
+      tags:
+      - Authentication
+  /users/profile:
+    get:
+      description: Get user profile by token
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User profile
+          schema:
+            type: string
+        "400":
+          description: Unhandled error (report it)
+          schema:
+            type: string
+        "500":
+          description: Server error (report it)
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Just User Profile by token
+      tags:
+      - Users
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

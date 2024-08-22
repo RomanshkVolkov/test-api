@@ -1,0 +1,61 @@
+networks:
+  test-network:
+    driver: bridge
+
+services:
+  sql-server:
+    container_name: dev-sql-server
+    user: root
+    build:
+      context: ./containers/development/db
+      dockerfile: Dockerfile
+    environment:
+      SA_PASSWORD: ${DEV_DOCKER_DATABASE_SA_PASSWORD}
+      ACCEPT_EULA: Y
+    networks:
+      - test-network
+    ports:
+      - "1433:1433"
+    volumes:
+      - ./containers/development/db/data:/var/opt/mssql/data
+  api:
+    container_name: dev-golang
+    user: root
+    build:
+      context: ./containers/development
+      dockerfile: Dockerfile
+    depends_on:
+      - sql-server
+    environment:
+      DB_SQLSERVER_STRING_CONECTION: ${DB_SQLSERVER_STRING_CONECTION}
+      JWT_SECRET: ${JWT_SECRET}
+      MAILER_EMAIL: ${MAILER_EMAIL}
+      MAILER_PASSWORD: ${MAILER_PASSWORD}
+      MAILER_SMTP_HOST: ${MAILER_SMTP_HOST}
+      MAILER_SMTP_PORT: ${MAILER_SMTP_PORT}
+    networks:
+      - test-network
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/srv
+    command: sh -c 'go mod download && air'
+  mailer:
+    image: mailhog/mailhog
+    container_name: dev-mailer
+    environment:
+      MH_AUTH_FILE: /mailhog.auth
+      MH_MAILDIR_PATH: /data
+      MH_STORAGE: maildir
+      MH_TLS_CERT: /mailhog.crt # Ruta al certificado dentro del contenedor
+      MH_TLS_KEY: /mailhog.key # Ruta a la clave privada dentro del contenedor
+    volumes:
+      - ./containers/development/mail/mailhog.auth:/mailhog.auth:ro
+      - ./containers/development/mail/data:/data:rw
+      - ./mailhog.crt:/mailhog.crt:ro # Monta el certificado
+      - ./mailhog.key:/mailhog.key:ro # Monta la clave privada
+    networks:
+      - test-network
+    ports:
+      - "1025:1025" #127.0.0.1:1025:1025  
+      - "8025:8025"
