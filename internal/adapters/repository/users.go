@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/RomanshkVolkov/test-api/internal/core/domain"
@@ -17,7 +16,7 @@ func SeedUsers(db *gorm.DB) {
 				Name:     "Jose Guzman",
 				Role:     domain.Root,
 			},
-			Password: "root",
+			Password: "password",
 		},
 		{
 			UserData: domain.UserData{
@@ -26,15 +25,16 @@ func SeedUsers(db *gorm.DB) {
 				Name:     "Diego Gutierrez",
 				Role:     domain.Root,
 			},
-			Password: "root",
-		}, {
+			Password: "password",
+		},
+		{
 			UserData: domain.UserData{
 				Username: "itzel_dwit",
-				Email:    "itzram@gmail.com",
+				Email:    "itzelramonf@gmail.com",
 				Name:     "Itzram",
 				Role:     domain.Root,
 			},
-			Password: "root",
+			Password: "password",
 		},
 	}
 
@@ -49,7 +49,7 @@ func SeedUsers(db *gorm.DB) {
 func FindByUsername(username string) (domain.User, error) {
 	user := domain.User{}
 	DBSQLServer.Model(&domain.User{}).Where("username = ?", username).First(&user)
-	fmt.Println(user)
+
 	if user.ID == 0 {
 		return domain.User{}, nil
 	}
@@ -60,7 +60,7 @@ func FindByUsername(username string) (domain.User, error) {
 func FindByUsernameOrEmail(username, email string) (domain.User, error) {
 	user := domain.User{}
 	DBSQLServer.Model(&domain.User{}).Where("username = ? OR email = ?", username, email).First(&user)
-	fmt.Println(user)
+
 	if user.ID == 0 {
 		return domain.User{}, nil
 	}
@@ -71,7 +71,7 @@ func FindByUsernameOrEmail(username, email string) (domain.User, error) {
 func FindByID(id uint) (domain.User, error) {
 	user := domain.User{}
 	DBSQLServer.Model(&domain.User{}).Where("id = ?", id).First(&user)
-	fmt.Println(user)
+
 	if user.ID == 0 {
 		return domain.User{}, nil
 	}

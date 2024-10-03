@@ -11,7 +11,6 @@ const docTemplate = `{
         "title": "{{.Title}}",
         "termsOfService": "http://swagger.io/terms/",
         "contact": {
-            "name": "Jose Guzman",
             "email": "joseguzmandev@gmail.com"
         },
         "version": "{{.Version}}"
@@ -281,6 +280,43 @@ const docTemplate = `{
                 }
             }
         },
+        "/mail/test": {
+            "post": {
+                "security": [
+                    {
+                        "none": []
+                    }
+                ],
+                "description": "This endpoint send a test email",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Mail"
+                ],
+                "summary": "Test email sending",
+                "responses": {
+                    "200": {
+                        "description": "Operation information",
+                        "schema": {
+                            "$ref": "#/definitions/domain.APIResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Unhandled error (report it)",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Server error (report it)",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/users/profile": {
             "get": {
                 "security": [
@@ -487,7 +523,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "3.0",
-	Host:             "192.168.1.149:8080",
+	Host:             "localhost:8080",
 	BasePath:         "/",
 	Schemes:          []string{},
 	Title:            "GO API",

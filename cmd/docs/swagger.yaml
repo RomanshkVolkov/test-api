@@ -114,11 +114,10 @@ definitions:
       username:
         type: string
     type: object
-host: 192.168.1.149:8080
+host: localhost:8080
 info:
   contact:
     email: joseguzmandev@gmail.com
-    name: Jose Guzman
   description: Created by @RomanshkVolkov.
   termsOfService: http://swagger.io/terms/
   title: GO API
@@ -294,6 +293,29 @@ paths:
       summary: Just Sign Up
       tags:
       - Authentication
+  /mail/test:
+    post:
+      description: This endpoint send a test email
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Operation information
+          schema:
+            $ref: '#/definitions/domain.APIResponse'
+        "400":
+          description: Unhandled error (report it)
+          schema:
+            type: string
+        "500":
+          description: Server error (report it)
+          schema:
+            type: string
+      security:
+      - none: []
+      summary: Test email sending
+      tags:
+      - Mail
   /users/profile:
     get:
       description: Get user profile by token

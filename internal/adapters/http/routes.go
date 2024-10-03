@@ -9,13 +9,22 @@ import (
 )
 
 func InitRoutes(r *gin.Engine) {
+	// 404 route
+	r.NoRoute(func(c *gin.Context) {
+		c.IndentedJSON(http.StatusNotFound, domain.APIResponse[any, any]{
+			Success: false,
+			Message: "Page not found",
+		})
+	})
+
 	r.Use(middleware.Middleware())
+	r.Static("/static", "/srv/static")
 
 	AuthRoutes(r)
 	UserRoutes(r)
 	MailRoutes(r)
 
-	// path routes
+	// root route
 	r.GET("/", func(c *gin.Context) {
 		req := c.Request
 		var userID uint
@@ -36,4 +45,5 @@ func InitRoutes(r *gin.Engine) {
 			},
 		})
 	})
+
 }

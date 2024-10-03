@@ -55,8 +55,6 @@ func TxtToRandomNumbers(s string) string {
 	}
 
 	rng := rand.Reader
-	fmt.Println("Seed:")
-	fmt.Println(seed)
 	_, err = rand.Int(rng, big.NewInt(seed))
 	if err != nil {
 		panic(err)

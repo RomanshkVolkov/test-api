@@ -115,12 +115,12 @@ func ResetPasswordRequest(request *domain.PasswordResetRequest) (domain.APIRespo
 		return repository.UserNotFound(), nil
 	}
 
-	t, err := template.ParseFiles("/srv/internal/adapters/templates/forgotten-password.gohtml")
+	t, err := template.ParseFiles("/srv/internal/adapters/templates/forgotten-password.html")
 	if err != nil {
 		panic(err)
 	}
 
-	bgClass := template.CSS(`.bg { display: "flex"; justify-content: "center"; align-items: "center"; background-color: "#22272e"; color: "white"; }`)
+	var Domain = ""
 
 	var body bytes.Buffer
 	t.Execute(&body, struct {
@@ -128,13 +128,13 @@ func ResetPasswordRequest(request *domain.PasswordResetRequest) (domain.APIRespo
 		Code        string
 		AppName     string
 		SupporEmail string
-		bgClass     template.CSS
+		Domain      string
 	}{
 		Name:        user.Name,
 		Code:        user.OTP,
 		AppName:     "Test API",
 		SupporEmail: "joseguzmandev@gmail.com",
-		bgClass:     bgClass,
+		Domain:      Domain,
 	})
 
 	mailOptions := &MailOptions{

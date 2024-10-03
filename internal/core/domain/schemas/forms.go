@@ -20,15 +20,15 @@ func FormValidator[T any](form GenericForm[T]) map[string][]string {
 			var errorMsg string
 			switch err.Tag() {
 			case "required":
-				errorMsg = "Por favor, ingresa un valor"
+				errorMsg = "Campo obligatorio."
 			case "email":
-				errorMsg = "Por favor, ingresa un correo válido."
+				errorMsg = "Ingresa un correo válido."
 			case "numeric":
-				errorMsg = "Por favor, ingresa un valor numérico."
+				errorMsg = "Ingresa un valor numérico."
 			case "min":
-				errorMsg = fmt.Sprintf("Por favor, ingresa minimo %s caracteres.", err.Param())
+				errorMsg = fmt.Sprintf("Mínimo %s carácteres.", err.Param())
 			case "max":
-				errorMsg = fmt.Sprintf("Por favor, ingresa máximo %s caracteres.", err.Param())
+				errorMsg = fmt.Sprintf("Máximo %s carácteres.", err.Param())
 			default:
 				errorMsg = err.Error()
 			}

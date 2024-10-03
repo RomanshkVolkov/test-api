@@ -6,6 +6,7 @@ import (
 
 	docs "github.com/RomanshkVolkov/test-api/cmd/docs"
 	"github.com/RomanshkVolkov/test-api/internal/adapters/http"
+	"github.com/RomanshkVolkov/test-api/internal/adapters/middleware"
 	"github.com/RomanshkVolkov/test-api/internal/adapters/repository"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
@@ -16,9 +17,9 @@ import (
 // @version         3.0
 // @description     Created by @RomanshkVolkov.
 // @termsOfService  http://swagger.io/terms/
-// @contact.name   
+// @contact.name
 // @contact.email  joseguzmandev@gmail.com
-// @host 				192.168.1.149:8080
+// @host 				localhost:8080
 // @BasePath  /
 // @securityDefinitions.apikey BearerAuth
 // @in header
@@ -34,7 +35,7 @@ func main() {
 	app := gin.Default()
 	docs.SwaggerInfo.Version = "3.0"
 
-	app.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	app.GET("/swagger/*any", middleware.IPWhiteListSwagger(), ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	http.InitRoutes(app)
 
