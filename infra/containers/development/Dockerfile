@@ -1,4 +1,4 @@
-FROM golang:1.22 as builder
+FROM golang:latest as builder
 WORKDIR /srv
 
 RUN go install github.com/air-verse/air@latest

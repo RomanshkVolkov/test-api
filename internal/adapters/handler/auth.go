@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/RomanshkVolkov/test-api/internal/adapters/repository"
@@ -22,12 +21,14 @@ import (
 func SignIn(c *gin.Context) {
 	request, err := ValidateRequest[domain.SignInRequest](c)
 	if err != nil {
+		c.IndentedJSON(http.StatusBadRequest, ServerError(err, RequestError))
 		return
 	}
 
-	authentication, err := service.SignIn(request.Username, request.Password)
+	server := service.GetServer(c)
+	authentication, err := server.SignIn(request.Username, request.Password)
 	if err != nil {
-		c.IndentedJSON(http.StatusUnauthorized, "error on login")
+		c.IndentedJSON(http.StatusUnauthorized, ServerError(err, domain.Message{En: "error on sign in", Es: "error al iniciar sesión"}))
 		return
 	}
 
@@ -44,16 +45,15 @@ func SignIn(c *gin.Context) {
 // @Router /auth/sign-up [post]
 func SignUp(c *gin.Context) {
 	request, err := ValidateRequest[domain.NewUser](c)
-
 	if err != nil {
-		fmt.Println(err)
-		c.IndentedJSON(http.StatusBadRequest, "error on request")
+		c.IndentedJSON(http.StatusBadRequest, ServerError(err, RequestError))
 		return
 	}
 
-	authentication, err := service.SignUp(request)
+	server := service.GetServer(c)
+	authentication, err := server.SignUp(request)
 	if err != nil {
-		c.IndentedJSON(http.StatusUnauthorized, "error on register")
+		c.IndentedJSON(http.StatusUnauthorized, ServerError(err, domain.Message{En: "error on sign up", Es: "error al registrarse"}))
 		return
 	}
 
@@ -72,13 +72,14 @@ func SignUp(c *gin.Context) {
 func SendEmailWithOTPCode(c *gin.Context) {
 	request, err := ValidateRequest[domain.PasswordResetRequest](c)
 	if err != nil {
-		c.IndentedJSON(http.StatusBadRequest, "error on request")
+		c.IndentedJSON(http.StatusBadRequest, ServerError(err, RequestError))
 		return
 	}
 
-	authentication, err := service.ResetPasswordRequest(request)
+	server := service.GetServer(c)
+	authentication, err := server.ResetPasswordRequest(request)
 	if err != nil {
-		c.IndentedJSON(http.StatusUnauthorized, "error on reset password")
+		c.IndentedJSON(http.StatusUnauthorized, ServerError(err, domain.Message{En: "error on send email", Es: "error al enviar el correo"}))
 		return
 	}
 
@@ -97,13 +98,14 @@ func SendEmailWithOTPCode(c *gin.Context) {
 func VerifyForgottenPasswordCode(c *gin.Context) {
 	request, err := ValidateRequest[domain.ForgottenPasswordCode](c)
 	if err != nil {
-		c.IndentedJSON(http.StatusBadRequest, "error on request")
+		c.IndentedJSON(http.StatusBadRequest, ServerError(err, RequestError))
 		return
 	}
 
-	authentication, err := service.VerifyForgottenPasswordCode(request)
+	server := service.GetServer(c)
+	authentication, err := server.VerifyForgottenPasswordCode(request)
 	if err != nil {
-		c.IndentedJSON(http.StatusUnauthorized, "error on reset password")
+		c.IndentedJSON(http.StatusUnauthorized, ServerError(err, domain.Message{En: "error on verify code", Es: "error al verificar el código"}))
 		return
 	}
 
@@ -122,13 +124,14 @@ func VerifyForgottenPasswordCode(c *gin.Context) {
 func ResetForgottenPassword(c *gin.Context) {
 	request, err := ValidateRequest[domain.ResetForgottenPassword](c)
 	if err != nil {
-		c.IndentedJSON(http.StatusBadRequest, "error on request")
+		c.IndentedJSON(http.StatusBadRequest, ServerError(err, RequestError))
 		return
 	}
 
-	res, err := service.ResetForgottenPassword(request)
+	server := service.GetServer(c)
+	res, err := server.ResetForgottenPassword(request)
 	if err != nil {
-		c.IndentedJSON(http.StatusUnauthorized, "error on reset password")
+		c.IndentedJSON(http.StatusUnauthorized, ServerError(err, domain.Message{En: "error on reset password", Es: "error al restablecer la contraseña"}))
 		return
 	}
 
@@ -148,14 +151,16 @@ func ResetForgottenPassword(c *gin.Context) {
 func ChangePassword(c *gin.Context) {
 	request, err := ValidateRequest[domain.ChangePassword](c)
 	if err != nil {
-		c.IndentedJSON(http.StatusBadRequest, "error on request")
+		c.IndentedJSON(http.StatusBadRequest, ServerError(err, RequestError))
 		return
 	}
+
 	user, _ := c.MustGet("user").(repository.CustomClaims)
 
-	res, err := service.ChangePassword(user, request)
+	server := service.GetServer(c)
+	res, err := server.ChangePassword(user, request)
 	if err != nil {
-		c.IndentedJSON(http.StatusInternalServerError, "error on change password")
+		c.IndentedJSON(http.StatusInternalServerError, ServerError(err, domain.Message{En: "error on change password", Es: "error al cambiar la contraseña"}))
 		return
 	}
 

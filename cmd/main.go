@@ -18,7 +18,7 @@ import (
 // @description     Created by @RomanshkVolkov.
 // @termsOfService  http://swagger.io/terms/
 // @contact.name
-// @contact.email  joseguzmandev@gmail.com
+// @contact.email  jose@guz-studio.dev
 // @host 				localhost:8080
 // @BasePath  /
 // @securityDefinitions.apikey BearerAuth

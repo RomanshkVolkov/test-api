@@ -4,12 +4,17 @@ type RequestValidator[T any] struct {
 	Type T
 }
 
+type Message struct {
+	En string `json:"en"`
+	Es string `json:"es"`
+}
+
 type APIResponse[T any, Sch any] struct {
-	Success     bool   `json:"success"`
-	Message     string `json:"message"`
-	Data        T      `json:"data" swaggerignore:"true"`
-	SchemaError Sch    `json:"schema" swaggerignore:"true"`
-	Error       error  `json:"error"`
+	Success     bool    `json:"success"`
+	Message     Message `json:"message"`
+	Data        T       `json:"data" swaggerignore:"true"`
+	SchemaError Sch     `json:"schema" swaggerignore:"true"`
+	Error       error   `json:"error"`
 }
 
 type RequestInfo struct {

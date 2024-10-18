@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/RomanshkVolkov/test-api/internal/adapters/repository"
@@ -9,8 +10,13 @@ import (
 
 func IPWhiteListSwagger() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		CurrentIP := c.ClientIP()
-		exist, err := repository.SwaggerValidateIPAddress(CurrentIP)
+		currentIP := c.ClientIP()
+		origin := c.Request.Header.Get("Origin") // get host
+		fmt.Println("host", origin)
+		fmt.Println("ip", currentIP)
+		repo := repository.GetDBConnection("DB_DSN_DOMAIN_1")
+		exist, err := repo.SwaggerValidateIPAddress(currentIP)
+
 		if err != nil {
 			c.AbortWithStatus(http.StatusForbidden)
 		}

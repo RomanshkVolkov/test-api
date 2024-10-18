@@ -27,7 +27,9 @@ services:
     depends_on:
       - sql-server
     environment:
-      DB_SQLSERVER_STRING_CONECTION: ${DB_SQLSERVER_STRING_CONECTION}
+      DB_DSN_DOMAIN_1: ${DB_DSN_DOMAIN_1}
+      DB_DSN_DOMAIN_2: ${DB_DSN_DOMAIN_2}
+      DB_DSN_DOMAIN_3: ${DB_DSN_DOMAIN_3}
       JWT_SECRET: ${JWT_SECRET}
       MAILER_EMAIL: ${MAILER_EMAIL}
       MAILER_PASSWORD: ${MAILER_PASSWORD}

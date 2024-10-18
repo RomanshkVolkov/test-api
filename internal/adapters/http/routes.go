@@ -13,7 +13,10 @@ func InitRoutes(r *gin.Engine) {
 	r.NoRoute(func(c *gin.Context) {
 		c.IndentedJSON(http.StatusNotFound, domain.APIResponse[any, any]{
 			Success: false,
-			Message: "Page not found",
+			Message: domain.Message{
+				En: "Route not found",
+				Es: "Ruta no encontrada",
+			},
 		})
 	})
 
@@ -36,7 +39,10 @@ func InitRoutes(r *gin.Engine) {
 
 		c.IndentedJSON(http.StatusOK, domain.APIResponse[any, any]{
 			Success: true,
-			Message: "Welcome to test-api",
+			Message: domain.Message{
+				En: "Welcome to the API",
+				Es: "Bienvenido a la API",
+			},
 			Data: domain.RequestInfo{
 				Host:      req.Host,
 				IP:        req.RemoteAddr,

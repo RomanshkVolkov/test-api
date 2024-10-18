@@ -46,9 +46,9 @@ func SeedUsers(db *gorm.DB) {
 	}
 }
 
-func FindByUsername(username string) (domain.User, error) {
+func (database *DSNSource) FindByUsername(username string) (domain.User, error) {
 	user := domain.User{}
-	DBSQLServer.Model(&domain.User{}).Where("username = ?", username).First(&user)
+	database.DB.Model(&domain.User{}).Where("username = ?", username).First(&user)
 
 	if user.ID == 0 {
 		return domain.User{}, nil
@@ -57,9 +57,9 @@ func FindByUsername(username string) (domain.User, error) {
 	return user, nil
 }
 
-func FindByUsernameOrEmail(username, email string) (domain.User, error) {
+func (database *DSNSource) FindByUsernameOrEmail(username, email string) (domain.User, error) {
 	user := domain.User{}
-	DBSQLServer.Model(&domain.User{}).Where("username = ? OR email = ?", username, email).First(&user)
+	database.DB.Model(&domain.User{}).Where("username = ? OR email = ?", username, email).First(&user)
 
 	if user.ID == 0 {
 		return domain.User{}, nil
@@ -68,9 +68,9 @@ func FindByUsernameOrEmail(username, email string) (domain.User, error) {
 	return user, nil
 }
 
-func FindByID(id uint) (domain.User, error) {
+func (database *DSNSource) FindByID(id uint) (domain.User, error) {
 	user := domain.User{}
-	DBSQLServer.Model(&domain.User{}).Where("id = ?", id).First(&user)
+	database.DB.Model(&domain.User{}).Where("id = ?", id).First(&user)
 
 	if user.ID == 0 {
 		return domain.User{}, nil
@@ -79,18 +79,18 @@ func FindByID(id uint) (domain.User, error) {
 	return user, nil
 }
 
-func FindByUsernameAndOTP(username string) (domain.User, error) {
+func (database *DSNSource) FindByUsernameAndOTP(username string) (domain.User, error) {
 	user := domain.User{}
-	if err := DBSQLServer.Model(&domain.User{}).Where("username = ?", username).First(&user).Error; err != nil {
+	if err := database.DB.Model(&domain.User{}).Where("username = ?", username).First(&user).Error; err != nil {
 		return user, err
 	}
 
 	return user, nil
 }
 
-func FindAndValidateOTP(username string, otp string) (domain.User, map[string][]string, error) {
+func (database *DSNSource) FindAndValidateOTP(username string, otp string) (domain.User, map[string][]string, error) {
 	schemaError := map[string][]string{}
-	user, err := FindByUsernameAndOTP(username)
+	user, err := database.FindByUsernameAndOTP(username)
 	if err != nil || user.ID == 0 {
 		schemaError["username"] = []string{"Usuario no encontrado"}
 		return domain.User{}, schemaError, err
@@ -109,7 +109,7 @@ func FindAndValidateOTP(username string, otp string) (domain.User, map[string][]
 	return user, schemaError, nil
 }
 
-func NewUser(request *domain.NewUser) (domain.UserData, error) {
+func (database *DSNSource) NewUser(request *domain.NewUser) (domain.UserData, error) {
 	user := domain.User{
 		UserData: domain.UserData{
 			Username: request.Username,
@@ -126,7 +126,7 @@ func NewUser(request *domain.NewUser) (domain.UserData, error) {
 	}
 	user.Password = hashedPassword
 
-	if err := DBSQLServer.Create(&user).Error; err != nil {
+	if err := database.DB.Create(&user).Error; err != nil {
 		return domain.UserData{}, err
 	}
 
@@ -140,8 +140,8 @@ func NewUser(request *domain.NewUser) (domain.UserData, error) {
 	}, nil
 }
 
-func SaveOTPCode(username string) (domain.User, error) {
-	user, err := FindByUsername(username)
+func (database *DSNSource) SaveOTPCode(username string) (domain.User, error) {
+	user, err := database.FindByUsername(username)
 	if err != nil {
 		return domain.User{}, err
 	}
@@ -154,7 +154,7 @@ func SaveOTPCode(username string) (domain.User, error) {
 	user.OTP = otpCode
 	user.OTPExpirationDate = time.Now().Add(time.Minute * 1)
 
-	if err := DBSQLServer.Save(&user).Error; err != nil {
+	if err := database.DB.Save(&user).Error; err != nil {
 		return user, err
 	}
 
@@ -169,12 +169,15 @@ func GenerateOTP(txt string) string {
 func UserNotFound() domain.APIResponse[string, any] {
 	return domain.APIResponse[string, any]{
 		Success: false,
-		Message: "User not found",
+		Message: domain.Message{
+			En: "User not found",
+			Es: "Usuario no encontrado",
+		},
 	}
 }
 
-func UpdatePassword(userID uint, password string) error {
-	user, err := FindByID(userID)
+func (database *DSNSource) UpdatePassword(userID uint, password string) error {
+	user, err := database.FindByID(userID)
 	if err != nil {
 		return err
 	}
@@ -186,7 +189,7 @@ func UpdatePassword(userID uint, password string) error {
 
 	user.Password = hashedPassword
 
-	if err := DBSQLServer.Save(&user).Error; err != nil {
+	if err := database.DB.Save(&user).Error; err != nil {
 		return err
 	}
 
