@@ -32,24 +32,35 @@ func DBConnection() {
 
 		db.AutoMigrate(&domain.User{})
 		db.AutoMigrate(&domain.Dev{})
+		db.AutoMigrate(&domain.UserProfiles{})
 
 		// Seed users
 		var count int64
-		var users []domain.User
-		db.Find(&users).Count(&count)
-		fmt.Printf("Users in database: %d\n", count)
+		var profiles []domain.UserProfiles
+		db.Find(&profiles).Count(&count)
 
 		if count == 0 {
+			fmt.Println("Seeding user profiles")
+			SeedProfiles(db)
+		}
+
+		var users []domain.User
+		db.Find(&users).Count(&count)
+		if count == 0 {
+			fmt.Println("Seeding users")
 			SeedUsers(db)
 		}
+
 	}
 
 }
 
 func GetDBConnection(subdomain string) DSNSource {
+	fmt.Println("Subdomain: ", subdomain)
+	authorizedHost := MAPPED_AUTHORIZED_DOMAINS[subdomain]
 	for _, db := range DBSQLServer {
-		fmt.Println("DB: ", db.Name)
-		if db.Name == subdomain {
+		if db.Name == authorizedHost {
+			fmt.Println("DB: ", db.Name)
 			return db
 		}
 	}

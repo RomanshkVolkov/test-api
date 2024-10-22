@@ -13,11 +13,19 @@ IF EXISTS (
 
 DROP DATABASE test;
 
+DROP DATABASE test2;
+
+DROP DATABASE test3;
+
 END;
 
 ELSE BEGIN PRINT 'Database does not exist... created it';
 
 CREATE DATABASE test;
+
+CREATE DATABASE test2;
+
+CREATE DATABASE test3;
 
 END;
 

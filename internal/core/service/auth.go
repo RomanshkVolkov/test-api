@@ -10,11 +10,11 @@ import (
 	schema "github.com/RomanshkVolkov/test-api/internal/core/domain/schemas"
 )
 
-func (server Server) SignIn(username string, password string) (domain.APIResponse[string, any], error) {
+func (server Server) SignIn(username string, password string) (domain.APIResponse[domain.SignInResponse, any], error) {
 	repo := repository.GetDBConnection(server.Host)
 	user, err := repo.FindByUsername(username)
-	if err != nil {
-		return domain.APIResponse[string, any]{
+	if err != nil || user.ID == 0 {
+		return domain.APIResponse[domain.SignInResponse, any]{
 			Success: false,
 			Message: domain.Message{
 				En: "User not found",
@@ -24,17 +24,10 @@ func (server Server) SignIn(username string, password string) (domain.APIRespons
 		}, err
 	}
 
-	if user.ID == 0 {
-		return repository.UserNotFound(), nil
-	}
-
 	validatedPassword := repository.ComparePasswords(user.Password, password)
 
-	fmt.Println(password)
-	fmt.Println(validatedPassword)
-
 	if !validatedPassword {
-		return domain.APIResponse[string, any]{
+		return domain.APIResponse[domain.SignInResponse, any]{
 			Success: false,
 			Message: domain.Message{
 				En: "Invalid credentials",
@@ -46,7 +39,7 @@ func (server Server) SignIn(username string, password string) (domain.APIRespons
 	token, err := repository.SigninJWT(user)
 
 	if err != nil {
-		return domain.APIResponse[string, any]{
+		return domain.APIResponse[domain.SignInResponse, any]{
 			Success: false,
 			Message: domain.Message{
 				En: "Error on sign in JWT",
@@ -55,19 +48,27 @@ func (server Server) SignIn(username string, password string) (domain.APIRespons
 		}, nil
 	}
 
-	return domain.APIResponse[string, any]{
+	return domain.APIResponse[domain.SignInResponse, any]{
 		Success: true,
 		Message: domain.Message{
 			En: "Welcome back",
 			Es: "Bienvenido de nuevo",
 		},
-		Data: token,
+		Data: domain.SignInResponse{
+			User: domain.UserData{
+				Username: user.Username,
+				Name:     user.Name,
+				Email:    user.Email,
+			},
+			Profile: user.Profile,
+			Token:   token,
+		},
 	}, nil
 }
 
 func (server Server) SignUp(request *domain.NewUser) (domain.APIResponse[domain.UserData, any], error) {
 	fields := schema.GenericForm[domain.NewUser]{Data: *request}
-	failValidatedFields := schema.FormValidator[domain.NewUser](fields)
+	failValidatedFields := schema.FormValidator(fields)
 	if len(failValidatedFields) > 0 {
 		return domain.APIResponse[domain.UserData, any]{
 			Success: false,
@@ -79,11 +80,11 @@ func (server Server) SignUp(request *domain.NewUser) (domain.APIResponse[domain.
 				Name:     request.Name,
 				Username: request.Username,
 				Email:    request.Email,
-				Role:     request.Role,
 			},
 			SchemaError: failValidatedFields,
 		}, nil
 	}
+
 	repo := repository.GetDBConnection(server.Host)
 	existUser, err := repo.FindByUsernameOrEmail(request.Username, request.Email)
 	if err != nil {
@@ -165,7 +166,7 @@ func (server Server) ResetPasswordRequest(request *domain.PasswordResetRequest) 
 		Name:        user.Name,
 		Code:        user.OTP,
 		AppName:     "Test API",
-		SupporEmail: "joseguzmandev@gmail.com",
+		SupporEmail: "sistemas@dwitmexico.com",
 		Domain:      Domain,
 	})
 
@@ -211,8 +212,8 @@ func (server Server) VerifyForgottenPasswordCode(request *domain.ForgottenPasswo
 	}
 
 	repo := repository.GetDBConnection(server.Host)
-	user, scheme, err := repo.FindAndValidateOTP(request.Username, request.OTP)
-	if err != nil {
+	user, scheme, err := repo.FindAndValidateOTP(fields.Data.Username, fields.Data.OTP)
+	if err != nil || user.ID == 0 {
 		return domain.APIResponse[string, any]{
 			Success: false,
 			Message: domain.Message{
@@ -222,10 +223,6 @@ func (server Server) VerifyForgottenPasswordCode(request *domain.ForgottenPasswo
 			SchemaError: scheme,
 			Error:       err,
 		}, nil
-	}
-
-	if user.ID == 0 {
-		return repository.UserNotFound(), nil
 	}
 
 	if len(scheme) > 0 {
@@ -355,6 +352,7 @@ func (server Server) ChangePassword(user repository.CustomClaims, request *domai
 			Success: false,
 			Message: domain.Message{
 				En: "Your current password is incorrect",
+				Es: "Tu contraseña actual es incorrecta",
 			},
 			SchemaError: map[string][]string{
 				"oldPassword": {"Tu contraseña actual es incorrecta"},

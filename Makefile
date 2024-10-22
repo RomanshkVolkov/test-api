@@ -1,6 +1,6 @@
 build-dev:
 	sudo rm -rf ./infra/containers/development/db/data/*
-	docker compose up --build
+	docker compose up -d --build
 run:
 	docker compose start sql-server
 	sleep 20

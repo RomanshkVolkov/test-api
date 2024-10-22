@@ -8,31 +8,33 @@ import (
 )
 
 func SeedUsers(db *gorm.DB) {
+	rootProfile := domain.UserProfiles{}
+	db.Model(&domain.UserProfiles{}).Where("slug = ?", "root").First(&rootProfile)
 	users := []*domain.User{
 		{
 			UserData: domain.UserData{
-				Username: "jose_dwit",
-				Email:    "joseguzmandev@gmail.com",
-				Name:     "Jose Guzman",
-				Role:     domain.Root,
+				Username:  "jose_dwit",
+				Email:     "joseguzmandev@gmail.com",
+				Name:      "Jose Guzman",
+				ProfileID: rootProfile.ID,
 			},
 			Password: "password",
 		},
 		{
 			UserData: domain.UserData{
-				Username: "diego_dwit",
-				Email:    "diegogutcat@gmail.com",
-				Name:     "Diego Gutierrez",
-				Role:     domain.Root,
+				Username:  "diego_dwit",
+				Email:     "diegogutcat@gmail.com",
+				Name:      "Diego Gutierrez",
+				ProfileID: rootProfile.ID,
 			},
 			Password: "password",
 		},
 		{
 			UserData: domain.UserData{
-				Username: "itzel_dwit",
-				Email:    "itzelramonf@gmail.com",
-				Name:     "Itzram",
-				Role:     domain.Root,
+				Username:  "itzel_dwit",
+				Email:     "itzelramonf@gmail.com",
+				Name:      "Itzram",
+				ProfileID: rootProfile.ID,
 			},
 			Password: "password",
 		},
@@ -43,6 +45,35 @@ func SeedUsers(db *gorm.DB) {
 		user.Password = hashedPassword
 
 		db.Create(&user)
+	}
+}
+
+func SeedProfiles(db *gorm.DB) {
+	profiles := []*domain.UserProfiles{
+		{
+			Name: "Super Admin",
+			Slug: "root",
+		},
+		{
+			Name: "Administrador",
+			Slug: "admin",
+		},
+		{
+			Name: "Cliente",
+			Slug: "customer",
+		},
+		{
+			Name: "Encargado",
+			Slug: "manager",
+		},
+		{
+			Name: "Cocinero",
+			Slug: "cook",
+		},
+	}
+
+	for _, profile := range profiles {
+		db.Create(&profile)
 	}
 }
 
@@ -115,7 +146,6 @@ func (database *DSNSource) NewUser(request *domain.NewUser) (domain.UserData, er
 			Username: request.Username,
 			Name:     request.Name,
 			Email:    request.Email,
-			Role:     request.Role,
 		},
 		Password: request.Password,
 	}
@@ -136,7 +166,6 @@ func (database *DSNSource) NewUser(request *domain.NewUser) (domain.UserData, er
 		Username: user.Username,
 		Name:     user.Name,
 		Email:    user.Email,
-		Role:     user.Role,
 	}, nil
 }
 
@@ -152,7 +181,7 @@ func (database *DSNSource) SaveOTPCode(username string) (domain.User, error) {
 
 	otpCode := GenerateOTP(user.Username)
 	user.OTP = otpCode
-	user.OTPExpirationDate = time.Now().Add(time.Minute * 1)
+	user.OTPExpirationDate = time.Now().UTC().Add(time.Minute * 1)
 
 	if err := database.DB.Save(&user).Error; err != nil {
 		return user, err
@@ -163,7 +192,7 @@ func (database *DSNSource) SaveOTPCode(username string) (domain.User, error) {
 
 func GenerateOTP(txt string) string {
 	base := TxtToRandomNumbers(txt + "otp" + CurrentTime())
-	return base[:5]
+	return base[:6]
 }
 
 func UserNotFound() domain.APIResponse[string, any] {
@@ -194,4 +223,11 @@ func (database *DSNSource) UpdatePassword(userID uint, password string) error {
 	}
 
 	return nil
+}
+
+func (database *DSNSource) GetUsersProfiles() (domain.UserProfiles, error) {
+	profiles := domain.UserProfiles{}
+	database.DB.Model(&domain.UserProfiles{}).Find(&profiles).Where("deleted_at IS NULL")
+
+	return profiles, nil
 }

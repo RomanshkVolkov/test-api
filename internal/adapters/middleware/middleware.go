@@ -17,6 +17,8 @@ func Middleware() gin.HandlerFunc {
 		t := time.Now().UTC()
 		authHeader := c.GetHeader("Authorization")
 		token := strings.TrimPrefix(authHeader, "Bearer ")
+		origin := c.GetHeader("Origin")
+		fmt.Println("origin", origin)
 
 		user, err := repository.ExtractDataByToken(token)
 

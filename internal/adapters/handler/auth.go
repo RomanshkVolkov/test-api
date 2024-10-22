@@ -68,7 +68,7 @@ func SignUp(c *gin.Context) {
 // @Success 200 {object} domain.APIResponse "Return just a message"
 // @Failure 401 {object} string "Unhandled error (report it)"
 // @Failure 500 {object} string "Server error (report it)"
-// @Router /auth/forgot-password [post]
+// @Router /auth/forgot-password [patch]
 func SendEmailWithOTPCode(c *gin.Context) {
 	request, err := ValidateRequest[domain.PasswordResetRequest](c)
 	if err != nil {
@@ -120,7 +120,7 @@ func VerifyForgottenPasswordCode(c *gin.Context) {
 // @Success 200 {object} domain.APIResponse "Operation information"
 // @Failure 400 {object} string "Unhandled error (report it)"
 // @Failure 500 {object} string "Server error (report it)"
-// @Router /auth/forgot-password/reset [post]
+// @Router /auth/forgot-password/reset [patch]
 func ResetForgottenPassword(c *gin.Context) {
 	request, err := ValidateRequest[domain.ResetForgottenPassword](c)
 	if err != nil {
@@ -147,7 +147,7 @@ func ResetForgottenPassword(c *gin.Context) {
 // @Success 200 {object} domain.APIResponse "Operation information"
 // @Failure 400 {object} string "Unhandled error (report it)"
 // @Failure 500 {object} string "Server error (report it)"
-// @Router /auth/change-password [post]
+// @Router /auth/change-password [put]
 func ChangePassword(c *gin.Context) {
 	request, err := ValidateRequest[domain.ChangePassword](c)
 	if err != nil {

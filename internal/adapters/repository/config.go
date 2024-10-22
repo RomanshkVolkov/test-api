@@ -14,6 +14,12 @@ type DSNSource struct {
 	DB   *gorm.DB
 }
 
+var MAPPED_AUTHORIZED_DOMAINS = map[string]string{
+	"localhost:8080": "DB_DSN_DOMAIN_1",
+	"0.0.0.0:8080":   "DB_DSN_DOMAIN_2",
+	"127.0.0.1:8080": "DB_DSN_DOMAIN_3",
+}
+
 func GetEnv(key string) string {
 	variable := os.Getenv(key)
 

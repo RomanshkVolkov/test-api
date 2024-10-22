@@ -4,7 +4,7 @@ definitions:
     properties:
       error: {}
       message:
-        type: string
+        $ref: '#/definitions/domain.Message'
       success:
         type: boolean
     type: object
@@ -40,6 +40,13 @@ definitions:
     required:
     - otp
     - username
+    type: object
+  domain.Message:
+    properties:
+      en:
+        type: string
+      es:
+        type: string
     type: object
   domain.NewUser:
     properties:
@@ -117,14 +124,14 @@ definitions:
 host: localhost:8080
 info:
   contact:
-    email: joseguzmandev@gmail.com
+    email: jose@guz-studio.dev
   description: Created by @RomanshkVolkov.
   termsOfService: http://swagger.io/terms/
   title: GO API
   version: "3.0"
 paths:
   /auth/change-password:
-    post:
+    put:
       description: This endpoint will change the password of authenticated the user
       parameters:
       - description: New password
@@ -154,7 +161,7 @@ paths:
       tags:
       - Authentication
   /auth/forgot-password:
-    post:
+    patch:
       description: This endpoint will send an email with the OTP code
       parameters:
       - description: Requires the username to identify the user
@@ -182,7 +189,7 @@ paths:
       tags:
       - Authentication
   /auth/forgot-password/reset:
-    post:
+    patch:
       description: This endpoint will reset the password of the user with the OTP
         code
       parameters:

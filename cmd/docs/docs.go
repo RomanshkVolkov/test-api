@@ -11,7 +11,7 @@ const docTemplate = `{
         "title": "{{.Title}}",
         "termsOfService": "http://swagger.io/terms/",
         "contact": {
-            "email": "joseguzmandev@gmail.com"
+            "email": "jose@guz-studio.dev"
         },
         "version": "{{.Version}}"
     },
@@ -19,7 +19,7 @@ const docTemplate = `{
     "basePath": "{{.BasePath}}",
     "paths": {
         "/auth/change-password": {
-            "post": {
+            "put": {
                 "security": [
                     {
                         "BearerAuth": []
@@ -67,7 +67,7 @@ const docTemplate = `{
             }
         },
         "/auth/forgot-password": {
-            "post": {
+            "patch": {
                 "description": "This endpoint will send an email with the OTP code",
                 "produces": [
                     "application/json"
@@ -110,7 +110,7 @@ const docTemplate = `{
             }
         },
         "/auth/forgot-password/reset": {
-            "post": {
+            "patch": {
                 "description": "This endpoint will reset the password of the user with the OTP code",
                 "produces": [
                     "application/json"
@@ -361,7 +361,7 @@ const docTemplate = `{
             "properties": {
                 "error": {},
                 "message": {
-                    "type": "string"
+                    "$ref": "#/definitions/domain.Message"
                 },
                 "success": {
                     "type": "boolean"
@@ -409,6 +409,17 @@ const docTemplate = `{
                     "type": "string",
                     "maxLength": 200,
                     "minLength": 6
+                }
+            }
+        },
+        "domain.Message": {
+            "type": "object",
+            "properties": {
+                "en": {
+                    "type": "string"
+                },
+                "es": {
+                    "type": "string"
                 }
             }
         },

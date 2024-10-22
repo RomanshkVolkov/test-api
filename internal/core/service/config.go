@@ -7,8 +7,7 @@ type Server struct {
 }
 
 func GetServer(c *gin.Context) *Server {
-	origin := c.Request.Header.Get("Origin")
 	return &Server{
-		Host: origin,
+		Host: c.Request.Host,
 	}
 }

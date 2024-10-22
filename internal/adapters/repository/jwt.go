@@ -6,10 +6,9 @@ import (
 )
 
 type CustomClaims struct {
-	ID       uint        `json:"id"`
-	Name     string      `json:"name"`
-	Username string      `json:"username"`
-	Role     domain.Role `json:"role"`
+	ID       uint   `json:"id"`
+	Name     string `json:"name"`
+	Username string `json:"username"`
 	jwt.StandardClaims
 }
 
@@ -19,7 +18,6 @@ func SigninJWT(user domain.User) (string, error) {
 		ID:       user.ID,
 		Name:     user.Name,
 		Username: user.Username,
-		Role:     user.Role,
 		StandardClaims: jwt.StandardClaims{
 			Issuer: "test-api",
 		},

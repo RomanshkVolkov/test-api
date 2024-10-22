@@ -11,10 +11,11 @@ import (
 func IPWhiteListSwagger() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		currentIP := c.ClientIP()
-		origin := c.Request.Header.Get("Origin") // get host
-		fmt.Println("host", origin)
+		host := c.Request.Host // get host
+		fmt.Println("host", host)
 		fmt.Println("ip", currentIP)
-		repo := repository.GetDBConnection("DB_DSN_DOMAIN_1")
+
+		repo := repository.GetDBConnection(host)
 		exist, err := repo.SwaggerValidateIPAddress(currentIP)
 
 		if err != nil {
