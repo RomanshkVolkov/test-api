@@ -47,7 +47,6 @@ func (server Server) SignIn(username string, password string) (domain.APIRespons
 			},
 		}, nil
 	}
-
 	return domain.APIResponse[domain.SignInResponse, any]{
 		Success: true,
 		Message: domain.Message{
@@ -55,13 +54,13 @@ func (server Server) SignIn(username string, password string) (domain.APIRespons
 			Es: "Bienvenido de nuevo",
 		},
 		Data: domain.SignInResponse{
-			User: domain.UserData{
+			UserData: domain.UserData{
 				Username: user.Username,
 				Name:     user.Name,
 				Email:    user.Email,
+				Profile:  user.Profile,
 			},
-			Profile: user.Profile,
-			Token:   token,
+			Token: token,
 		},
 	}, nil
 }

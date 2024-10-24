@@ -30,8 +30,8 @@ definitions:
   domain.ForgottenPasswordCode:
     properties:
       otp:
-        maxLength: 5
-        minLength: 5
+        maxLength: 6
+        minLength: 6
         type: string
       username:
         maxLength: 200
@@ -49,29 +49,6 @@ definitions:
         type: string
     type: object
   domain.NewUser:
-    properties:
-      email:
-        maxLength: 300
-        type: string
-      name:
-        maxLength: 300
-        minLength: 3
-        type: string
-      password:
-        minLength: 6
-        type: string
-      role:
-        $ref: '#/definitions/domain.Role'
-      username:
-        maxLength: 200
-        minLength: 6
-        type: string
-    required:
-    - email
-    - name
-    - password
-    - role
-    - username
     type: object
   domain.PasswordResetRequest:
     properties:
@@ -85,8 +62,8 @@ definitions:
         minLength: 6
         type: string
       otp:
-        maxLength: 5
-        minLength: 5
+        maxLength: 6
+        minLength: 6
         type: string
       password:
         maxLength: 200
@@ -102,24 +79,14 @@ definitions:
     - password
     - username
     type: object
-  domain.Role:
-    enum:
-    - root
-    - admin
-    - customer
-    - employer
-    type: string
-    x-enum-varnames:
-    - Root
-    - Admin
-    - Customer
-    - Employer
   domain.SignInRequest:
     properties:
       password:
         type: string
       username:
         type: string
+    type: object
+  domain.UserProfiles:
     type: object
 host: localhost:8080
 info:
@@ -344,6 +311,29 @@ paths:
       security:
       - BearerAuth: []
       summary: Just User Profile by token
+      tags:
+      - Users
+  /users/profiles:
+    get:
+      description: Get users profiles list
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Users profiles
+          schema:
+            $ref: '#/definitions/domain.UserProfiles'
+        "400":
+          description: Unhandled error (report it)
+          schema:
+            type: string
+        "500":
+          description: Server error (report it)
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Just Users Profiles List
       tags:
       - Users
 securityDefinitions:

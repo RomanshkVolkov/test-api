@@ -347,6 +347,43 @@
                     }
                 }
             }
+        },
+        "/users/profiles": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get users profiles list",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Just Users Profiles List",
+                "responses": {
+                    "200": {
+                        "description": "Users profiles",
+                        "schema": {
+                            "$ref": "#/definitions/domain.UserProfiles"
+                        }
+                    },
+                    "400": {
+                        "description": "Unhandled error (report it)",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Server error (report it)",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -396,8 +433,8 @@
             "properties": {
                 "otp": {
                     "type": "string",
-                    "maxLength": 5,
-                    "minLength": 5
+                    "maxLength": 6,
+                    "minLength": 6
                 },
                 "username": {
                     "type": "string",
@@ -418,37 +455,7 @@
             }
         },
         "domain.NewUser": {
-            "type": "object",
-            "required": [
-                "email",
-                "name",
-                "password",
-                "role",
-                "username"
-            ],
-            "properties": {
-                "email": {
-                    "type": "string",
-                    "maxLength": 300
-                },
-                "name": {
-                    "type": "string",
-                    "maxLength": 300,
-                    "minLength": 3
-                },
-                "password": {
-                    "type": "string",
-                    "minLength": 6
-                },
-                "role": {
-                    "$ref": "#/definitions/domain.Role"
-                },
-                "username": {
-                    "type": "string",
-                    "maxLength": 200,
-                    "minLength": 6
-                }
-            }
+            "type": "object"
         },
         "domain.PasswordResetRequest": {
             "type": "object",
@@ -474,8 +481,8 @@
                 },
                 "otp": {
                     "type": "string",
-                    "maxLength": 5,
-                    "minLength": 5
+                    "maxLength": 6,
+                    "minLength": 6
                 },
                 "password": {
                     "type": "string",
@@ -488,21 +495,6 @@
                     "minLength": 6
                 }
             }
-        },
-        "domain.Role": {
-            "type": "string",
-            "enum": [
-                "root",
-                "admin",
-                "customer",
-                "employer"
-            ],
-            "x-enum-varnames": [
-                "Root",
-                "Admin",
-                "Customer",
-                "Employer"
-            ]
         },
         "domain.SignInRequest": {
             "type": "object",
@@ -514,6 +506,9 @@
                     "type": "string"
                 }
             }
+        },
+        "domain.UserProfiles": {
+            "type": "object"
         }
     },
     "securityDefinitions": {

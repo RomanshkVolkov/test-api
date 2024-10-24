@@ -1,3 +1,11 @@
+// Developer: Romanshk Volkov - https://github.com/RomanshkVolkov
+// Customer: Dwit México - https://dwitmexico.com
+// Project:
+
+// Development notes:
+// watch out for errors, it may appear that changes in development are not reflected.
+// Aa unused variable or a typographical error in the code may cause air to not reflect the changes.
+// First of all, check the logs. If there are no errors, then the problem is in the code.
 package main
 
 import (

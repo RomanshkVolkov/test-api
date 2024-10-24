@@ -23,3 +23,8 @@ type RequestInfo struct {
 	UserAgent string `json:"agent"`
 	UserID    uint   `json:"userID"`
 }
+
+type GenericCatalog struct {
+	ID   uint   `json:"id"`
+	Name string `json:"name"`
+}

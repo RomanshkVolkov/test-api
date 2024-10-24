@@ -5,11 +5,11 @@ import (
 	"github.com/RomanshkVolkov/test-api/internal/core/domain"
 )
 
-func (server Server) GetUsersProfiles() (domain.APIResponse[domain.UserProfiles, any], error) {
+func (server Server) GetUsersProfiles() (domain.APIResponse[[]domain.UserProfiles, any], error) {
 	repo := repository.GetDBConnection(server.Host)
 	profiles, err := repo.GetUsersProfiles()
 	if err != nil {
-		return domain.APIResponse[domain.UserProfiles, any]{
+		return domain.APIResponse[[]domain.UserProfiles, any]{
 			Success: false,
 			Message: domain.Message{
 				En: "Error on get users profiles",
@@ -19,7 +19,7 @@ func (server Server) GetUsersProfiles() (domain.APIResponse[domain.UserProfiles,
 		}, err
 	}
 
-	return domain.APIResponse[domain.UserProfiles, any]{
+	return domain.APIResponse[[]domain.UserProfiles, any]{
 		Success: true,
 		Message: domain.Message{
 			En: "Users profiles",

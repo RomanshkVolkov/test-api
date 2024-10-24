@@ -4,82 +4,12 @@ import (
 	"time"
 
 	"github.com/RomanshkVolkov/test-api/internal/core/domain"
-	"gorm.io/gorm"
 )
-
-func SeedUsers(db *gorm.DB) {
-	rootProfile := domain.UserProfiles{}
-	db.Model(&domain.UserProfiles{}).Where("slug = ?", "root").First(&rootProfile)
-	users := []*domain.User{
-		{
-			UserData: domain.UserData{
-				Username:  "jose_dwit",
-				Email:     "joseguzmandev@gmail.com",
-				Name:      "Jose Guzman",
-				ProfileID: rootProfile.ID,
-			},
-			Password: "password",
-		},
-		{
-			UserData: domain.UserData{
-				Username:  "diego_dwit",
-				Email:     "diegogutcat@gmail.com",
-				Name:      "Diego Gutierrez",
-				ProfileID: rootProfile.ID,
-			},
-			Password: "password",
-		},
-		{
-			UserData: domain.UserData{
-				Username:  "itzel_dwit",
-				Email:     "itzelramonf@gmail.com",
-				Name:      "Itzram",
-				ProfileID: rootProfile.ID,
-			},
-			Password: "password",
-		},
-	}
-
-	for _, user := range users {
-		hashedPassword, _ := HashPassword(user.Password)
-		user.Password = hashedPassword
-
-		db.Create(&user)
-	}
-}
-
-func SeedProfiles(db *gorm.DB) {
-	profiles := []*domain.UserProfiles{
-		{
-			Name: "Super Admin",
-			Slug: "root",
-		},
-		{
-			Name: "Administrador",
-			Slug: "admin",
-		},
-		{
-			Name: "Cliente",
-			Slug: "customer",
-		},
-		{
-			Name: "Encargado",
-			Slug: "manager",
-		},
-		{
-			Name: "Cocinero",
-			Slug: "cook",
-		},
-	}
-
-	for _, profile := range profiles {
-		db.Create(&profile)
-	}
-}
 
 func (database *DSNSource) FindByUsername(username string) (domain.User, error) {
 	user := domain.User{}
-	database.DB.Model(&domain.User{}).Where("username = ?", username).First(&user)
+	// with profile
+	database.DB.Preload("Profile").Model(&domain.User{}).Where("username = ?", username).First(&user)
 
 	if user.ID == 0 {
 		return domain.User{}, nil
@@ -225,9 +155,16 @@ func (database *DSNSource) UpdatePassword(userID uint, password string) error {
 	return nil
 }
 
-func (database *DSNSource) GetUsersProfiles() (domain.UserProfiles, error) {
-	profiles := domain.UserProfiles{}
-	database.DB.Model(&domain.UserProfiles{}).Find(&profiles).Where("deleted_at IS NULL")
+func (database *DSNSource) GetProfileByID(profileID uint) (domain.UserProfiles, error) {
+	profile := domain.UserProfiles{}
+	database.DB.Model(&domain.UserProfiles{}).Where("id = ?", profileID).First(&profile)
+
+	return profile, nil
+}
+
+func (database *DSNSource) GetUsersProfiles() ([]domain.UserProfiles, error) {
+	profiles := []domain.UserProfiles{}
+	database.DB.Model(&domain.UserProfiles{}).Find(&profiles).Where("deleted_at IS NULL").Order("name ASC")
 
 	return profiles, nil
 }

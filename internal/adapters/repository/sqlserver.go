@@ -3,7 +3,6 @@ package repository
 import (
 	"fmt"
 
-	"github.com/RomanshkVolkov/test-api/internal/core/domain"
 	"gorm.io/driver/sqlserver"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -30,27 +29,7 @@ func DBConnection() {
 			DB:   db,
 		})
 
-		db.AutoMigrate(&domain.User{})
-		db.AutoMigrate(&domain.Dev{})
-		db.AutoMigrate(&domain.UserProfiles{})
-
-		// Seed users
-		var count int64
-		var profiles []domain.UserProfiles
-		db.Find(&profiles).Count(&count)
-
-		if count == 0 {
-			fmt.Println("Seeding user profiles")
-			SeedProfiles(db)
-		}
-
-		var users []domain.User
-		db.Find(&users).Count(&count)
-		if count == 0 {
-			fmt.Println("Seeding users")
-			SeedUsers(db)
-		}
-
+		RunSeeds(db)
 	}
 
 }

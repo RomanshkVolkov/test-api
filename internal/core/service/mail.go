@@ -37,7 +37,7 @@ func SendMail(options *MailOptions) (bool, error) {
 	fmt.Println("Host: ", SMTPHost)
 	fmt.Println("Port: ", port)
 
-	d := gomail.NewDialer("smtp.gmail.com", 587, Email, Password)
+	d := gomail.NewDialer(SMTPHost, port, Email, Password)
 
 	if err := d.DialAndSend(m); err != nil {
 		fmt.Print(err.Error())
